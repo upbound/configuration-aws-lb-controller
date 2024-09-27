@@ -1,0 +1,74 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xawslbcontrollers.aws.platform.upbound.io
+spec:
+  defaultCompositeDeletePolicy: Foreground
+  group: aws.platform.upbound.io
+  names:
+    kind: XAWSLBController
+    plural: xawslbcontrollers
+  claimNames:
+    kind: AWSLBController
+    plural: awslbcontrollers
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                parameters:
+                  type: object
+                  description: App configuration parameters.
+                  properties:
+                    awsAccountId:
+                      description: Account-ID of the aws account the cluster lives in.
+                      type: string
+                    oidcProvider:
+                      description: OIDC provider which is used for trust in iam-role.
+                      type: string
+                    clusterName:
+                      description: The name of the eks-cluster where the lb-controller will be installed.
+                      type: string
+                    deletionPolicy:
+                      description: Delete the external resources when the Claim/XR is deleted. Defaults to Delete
+                      enum:
+                        - Delete
+                        - Orphan
+                      type: string
+                      default: Delete
+                    providerConfigName:
+                      description: Crossplane ProviderConfig to use for provisioning this resources
+                      type: string
+                    helm:
+                      type: object
+                      description: Configuration for operators.
+                      properties:
+                        chart:
+                          type: object
+                          description: Configuration for the Helm Chart
+                          properties:
+                            name:
+                              type: string
+                              description: chart name
+                            repo:
+                              type: string
+                              description: chart repo
+                            version:
+                              type: string
+                              description: chart version
+                  required:
+                    - awsAccountId
+                    - clusterName
+                    - oidcProvider
+                    - providerConfigName
+            status:
+              type: object
+              properties:
+                roleArn:
+                  type: string
