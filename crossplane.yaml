@@ -16,6 +16,9 @@ spec:
   crossplane:
     version: ">=v1.14.1-0"
   dependsOn:
+    - configuration: xpkg.upbound.io/upbound/configuration-aws-eks-irsa
+      # renovate: datasource=github-releases depName=upbound/configuration-aws-eks-irsa
+      version: "v0.7.0"
     - provider: xpkg.upbound.io/crossplane-contrib/provider-helm
       # renovate: datasource=github-releases depName=crossplane-contrib/provider-helm
       version: "v0.19.0"
