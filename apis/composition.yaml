@@ -286,8 +286,6 @@ spec:
                 toFieldPath: spec.parameters.deletionPolicy
               - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.clusterName
-                policy:
-                  fromFieldPath: Required
                 toFieldPath: spec.parameters.clusterName
               - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.clusterNameRef
@@ -300,8 +298,6 @@ spec:
                 toFieldPath: status.roleArn
               - type: ToCompositeFieldPath
                 fromFieldPath: status.podIdentity.clusterName
-                policy:
-                  fromFieldPath: Required
                 toFieldPath: status.clusterName
           - name: helmRelease
             base:
@@ -321,7 +317,6 @@ spec:
                     # However lb-controller won't restart by itself and will keep using the node-role,
                     # so we patch replicaCount after the role becomes ready
                     replicaCount: 0
-                  wait: true
                 rollbackLimit: 3
             patches:
               - type: FromCompositeFieldPath
@@ -341,8 +336,6 @@ spec:
                 toFieldPath: spec.forProvider.chart.version
               - type: FromCompositeFieldPath
                 fromFieldPath: status.clusterName
-                policy:
-                  fromFieldPath: Required
                 toFieldPath: spec.forProvider.values.clusterName
               - type: FromCompositeFieldPath
                 fromFieldPath: status.roleArn
@@ -358,3 +351,22 @@ spec:
                         - type: regexp
                           regexp: '.*'
                           result: 2
+
+          - name: usageXEksByAWSLBController
+            base:
+              apiVersion: apiextensions.crossplane.io/v1alpha1
+              kind: Usage
+              spec:
+                by:
+                  apiVersion: helm.crossplane.io/v1beta1
+                  kind: Release
+                  resourceSelector:
+                    matchControllerRef: true
+                of:
+                  apiVersion: aws.platform.upbound.io/v1alpha1
+                  kind: XEKS
+                  resourceSelector:
+                    matchLabels:
+                      platform.upbound.io/deletion-ordering: enabled
+            readinessChecks:
+              - type: None

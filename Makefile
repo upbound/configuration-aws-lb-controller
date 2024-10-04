@@ -13,7 +13,8 @@ PLATFORMS ?= linux_amd64
 
 UP_VERSION = v0.32.1
 UP_CHANNEL = stable
-UPTEST_VERSION = v0.13.1
+UPTEST_VERSION = v1.2.0
+UPTEST_CLAIMS ?= examples/aws-lb-controller-xr.yaml,examples/network-xr.yaml,examples/eks-xr.yaml
 CROSSPLANE_CLI_VERSION=v1.16.0
 
 -include build/makelib/k8s_tools.mk
@@ -33,7 +34,7 @@ CROSSPLANE_CHART_REPO = https://charts.upbound.io/stable
 CROSSPLANE_CHART_NAME = universal-crossplane
 CROSSPLANE_NAMESPACE = upbound-system
 CROSSPLANE_ARGS = "--enable-usages"
-KIND_CLUSTER_NAME = uptest-$(PROJECT_NAME)
+KIND_CLUSTER_NAME ?= uptest-$(PROJECT_NAME)
 -include build/makelib/local.xpkg.mk
 -include build/makelib/controlplane.mk
 
@@ -62,24 +63,45 @@ build.init: $(UP)
 # ====================================================================================
 # End to End Testing
 
-check:
+# check:
 ifndef UPTEST_CLOUD_CREDENTIALS
-	@$(INFO) Please export UPTEST_CLOUD_CREDENTIALS, e.g. \`export UPTEST_CLOUD_CREDENTIALS=\$\(cat \~/.aws/credentials\)\`
+	@$(INFO) Please export UPTEST_CLOUD_CREDENTIALS, e.g. \`export UPTEST_CLOUD_CREDENTIALS=\"$$\(cat \~/.aws/credentials\)\"\`
 	@$(FAIL)
 endif
 
+UPTEST_COMMAND = SKIP_DEPLOY_ARGO=$(SKIP_DEPLOY_ARGO) \
+	KUBECTL=$(KUBECTL) \
+	CHAINSAW=$(CHAINSAW) \
+	CROSSPLANE_CLI=$(CROSSPLANE_CLI) \
+	CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) \
+	YQ=$(YQ) \
+	$(UPTEST) e2e $(UPTEST_CLAIMS) \
+	--data-source="${UPTEST_DATASOURCE_PATH}" \
+	--setup-script=$(SETUP_SCRIPT) \
+	--default-timeout=2400s \
+	--skip-update
+
 # This target requires the following environment variables to be set:
 # - UPTEST_CLOUD_CREDENTIALS, cloud credentials for the provider being tested, e.g. export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)
+# - To ensure the proper functioning of the end-to-end test resource pre-deletion hook, it is crucial to arrange your resources appropriately.
+#   You can check the basic implementation here: https://github.com/upbound/uptest/blob/main/internal/templates/01-delete.yaml.tmpl.
 # - UPTEST_DATASOURCE_PATH (optional), see https://github.com/upbound/uptest#injecting-dynamic-values-and-datasource
-SKIP_DELETE ?=
-uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
+SETUP_SCRIPT ?= test/setup.sh
+uptest: $(UPTEST) $(KUBECTL) $(CHAINSAW) $(CROSSPLANE_CLI) $(YQ)
 	@$(INFO) running automated tests
-	@KUBECTL=$(KUBECTL) KUTTL=$(KUTTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) CROSSPLANE_CLI=$(CROSSPLANE_CLI) $(UPTEST) e2e "${UPTEST_EXAMPLE_LIST}" --data-source="${UPTEST_DATASOURCE_PATH}" --setup-script=test/setup.sh --default-timeout=2400 $(SKIP_DELETE) || $(FAIL)
+	@if [ "${UPTEST_SKIP_DELETE}" = "true" ]; then \
+		echo "Running uptest and we will not remove resource..."; \
+		EXTRA_ARGS="--skip-delete"; \
+	else \
+		echo "Running uptest and we will remove resources..."; \
+		EXTRA_ARGS=""; \
+	fi; \
+	$(UPTEST_COMMAND) $$EXTRA_ARGS || $(FAIL)
 	@$(OK) running automated tests
 
 # This target requires the following environment variables to be set:
 # - UPTEST_CLOUD_CREDENTIALS, cloud credentials for the provider being tested, e.g. export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)
-e2e: check build controlplane.down controlplane.up local.xpkg.deploy.configuration.$(PROJECT_NAME) uptest ## Run uptest together with all dependencies. Use `make e2e SKIP_DELETE=--skip-delete` to skip deletion of resources.
+e2e: build controlplane.down controlplane.up local.xpkg.deploy.configuration.$(PROJECT_NAME) uptest ## Run uptest together with all dependencies. Use `make e2e SKIP_DELETE=--skip-delete` to skip deletion of resources.
 
 render: $(CROSSPLANE_CLI) ${YQ}
 	@indir="./examples"; \

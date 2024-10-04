@@ -1,15 +1,16 @@
 apiVersion: aws.platform.upbound.io/v1alpha1
 kind: XAWSLBController
 metadata:
-  name: aws-lb-controller
-  namespace: default
+  name: configuration-aws-lb-controller
+  annotations:
+    uptest.upbound.io/post-delete-hook: post_delete.sh
   labels:
     platform.upbound.io/deletion-ordering: enabled
 spec:
   parameters:
     region: us-west-2
     helm:
-      providerConfigName: platform-ref-aws
+      providerConfigName: configuration-aws-lb-controller
     clusterNameSelector:
       matchLabels:
         crossplane.io/composite: configuration-aws-lb-controller

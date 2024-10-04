@@ -2,6 +2,8 @@ apiVersion: aws.platform.upbound.io/v1alpha1
 kind: XEKS
 metadata:
   name: configuration-aws-lb-controller
+  labels:
+    platform.upbound.io/deletion-ordering: enabled
 spec:
   parameters:
     id: configuration-aws-lb-controller

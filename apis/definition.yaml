@@ -24,7 +24,7 @@ spec:
               properties:
                 parameters:
                   type: object
-                  description: App configuration parameters.
+                  description: AWS Load Balancer Controller configuration parameters.
                   properties:
                     region:
                       type: string
