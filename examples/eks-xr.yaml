@@ -7,7 +7,7 @@ metadata:
 spec:
   parameters:
     id: configuration-aws-lb-controller
-    region: us-west-2
+    region: eu-west-1
     version: "1.27"
     #iam:
       # replace with your custom arn like:
