@@ -83,7 +83,7 @@ fallthrough: submodules
 	@make
 
 # Update the submodules, such as the common build scripts.
-submodules:
+submodules: ## Update the submodules, such as the common build scripts.
 	@git submodule sync
 	@git submodule update --init --recursive
 
@@ -92,7 +92,7 @@ submodules:
 build.init: $(UP)
 
 .PHONY: check-examples
-check-examples:
+check-examples: ## Check examples for sanity
 	@$(INFO) Checking if package versions in dependencies match examples
 	@FN_EXAMPLES=$$( \
 		find examples -type f -name "*.yaml" | \
@@ -115,9 +115,6 @@ check-examples:
 		exit 1; \
 	fi;
 	@$(OK) Package versions are sane
-
-reviewable: yamllint check-examples render
-	@$(OK)
 
 help.local:
 	@grep -E '^[a-zA-Z_-]+.*:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
