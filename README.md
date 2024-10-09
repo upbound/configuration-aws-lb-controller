@@ -12,7 +12,6 @@ The core components of a custom API in [Crossplane](https://docs.crossplane.io/l
 
 In this specific configuration, the AWS Load Balancer Controller API contains:
 
-- **an [AWS network](/apis/definition.yaml) custom resource type.**
 - **Composition of the load balancer controller resources:** Configured in [/apis/composition.yaml](/apis/composition.yaml), it provisions the load-balancer controller helm chart and the necessary IAM Role with proper permissions.
 
 This repository contains an Composite Resource (XR) file.
