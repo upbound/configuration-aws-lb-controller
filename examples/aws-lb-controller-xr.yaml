@@ -3,7 +3,7 @@ kind: XAWSLBController
 metadata:
   name: configuration-aws-lb-controller
   annotations:
-    render.crossplane.io/composition-path: apis/composition.yaml
+    render.crossplane.io/composition-path: apis/pat/composition.yaml
     render.crossplane.io/function-path: examples/functions.yaml
     uptest.upbound.io/post-delete-hook: post_delete.sh
   labels:

@@ -3,7 +3,7 @@
 # Generic Makefile to be used across repositories building a crossplane configuration
 # package
 #
-# Common targets:
+# Available targets:
 #
 # - `yamllint`
 #   Runs yamllint for all files in `api`-folder recursively
@@ -12,6 +12,24 @@
 #   Runs crossplane render to render the output of the composition. Usefule for quick
 #   feedback in order to test templating.
 #   Important note:
+#		Claims need following annotations in order for render to work (adjust the paths
+#		if necessary):
+#			render.crossplane.io/composition-path: apis/pat/composition.yaml
+#			render.crossplane.io/function-path: examples/functions.yaml
+#
+# - `e2e`
+#   Runs full end-to-end test, including creating cluster, setting up the configuration
+#   and testing if create, import and delete work as expected.
+#   This target requires the following environment variables to be set:
+#   UPTEST_CLOUD_CREDENTIALS, cloud credentials for the provider being tested, e.g. export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)
+#
+#	Available options:
+#		UPTEST_SKIP_DELETE (default `false`) skips the deletion of any resources created during the test
+#		UPTEST_SKIP_UPDATE (default `false`) skips testing the update of the claims
+#		UPTEST_SKIP_IMPORT (default `true`) skips testing the import of resources
+#	Example:
+#		`make e2e UPTEST_SKIP_DELETE=true`
+
 # Project Setup
 # ====================================================================================
 
@@ -83,7 +101,7 @@ fallthrough: submodules
 	@make
 
 # Update the submodules, such as the common build scripts.
-submodules: ## Update the submodules, such as the common build scripts.
+submodules:
 	@git submodule sync
 	@git submodule update --init --recursive
 
