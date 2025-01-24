@@ -10,7 +10,7 @@ metadata:
     platform.upbound.io/deletion-ordering: enabled
 spec:
   parameters:
-    region: eu-west-1
+    region: eu-central-1
     helm:
       providerConfigName: configuration-aws-lb-controller
     clusterNameSelector:
