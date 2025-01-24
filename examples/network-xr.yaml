@@ -5,17 +5,17 @@ metadata:
 spec:
   parameters:
     id: configuration-aws-lb-controller
-    region: eu-west-1
+    region: eu-central-1
     subnets:
-      - availabilityZone: eu-west-1a
+      - availabilityZone: eu-central-1a
         type: public
         cidrBlock: 192.168.0.0/18
-      - availabilityZone: eu-west-1b
+      - availabilityZone: eu-central-1b
         type: public
         cidrBlock: 192.168.64.0/18
-      - availabilityZone: eu-west-1a
+      - availabilityZone: eu-central-1a
         type: private
         cidrBlock: 192.168.128.0/18
-      - availabilityZone: eu-west-1b
+      - availabilityZone: eu-central-1b
         type: private
         cidrBlock: 192.168.192.0/18
