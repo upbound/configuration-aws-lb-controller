@@ -3,4 +3,4 @@ kind: Configuration
 metadata:
   name: configuration-aws-lb-controller
 spec:
-  package: xpkg.upbound.io/upbound/configuration-aws-lb-controller:v0.2.0
+  package: xpkg.upbound.io/upbound/configuration-aws-lb-controller:v0.3.0
