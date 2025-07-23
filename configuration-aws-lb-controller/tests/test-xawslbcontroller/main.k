@@ -1,0 +1,106 @@
+
+import models.io.upbound.dev.meta.v1alpha1 as metav1alpha1
+import models.io.upbound.platform.aws.v1alpha1 as awsv1alpha1
+import models.io.crossplane.helm.v1beta1 as helmv1beta1
+import models.k8s.apimachinery.pkg.apis.meta.v1 as metav1
+
+
+_items = [
+    metav1alpha1.CompositionTest{
+        metadata.name: "test-awslbcontroller"
+        spec = {
+            assertResources: [
+                # XPodIdentity for AWS Pod Identity
+                awsv1alpha1.XPodIdentity{
+                    metadata.name: "podidentity"
+                    spec = {
+                        parameters = {
+                            region: "eu-central-1"
+                            serviceAccount = {
+                                name: "aws-load-balancer-controller"
+                                namespace: "kube-system"
+                            }
+                        }
+                    }
+                },
+                # Helm Release for AWS Load Balancer Controller
+                helmv1beta1.Release{
+                    metadata.name: "helmrelease"
+                    spec = {
+                        forProvider = {
+                            chart = {
+                                name: "aws-load-balancer-controller"
+                                repository: "https://aws.github.io/eks-charts"
+                                version: "1.8.3"
+                            }
+                            namespace: "kube-system"
+                            values = {
+                                clusterName: "configuration-aws-lb-controller-c8ck8"
+                                serviceAccount = {
+                                    name: "aws-load-balancer-controller"
+                                }
+                                replicaCount: 0
+                            }
+                        }
+                        rollbackLimit: 3
+                    }
+                },
+                # Usage resource for deletion ordering
+                {
+                    apiVersion: "apiextensions.crossplane.io/v1alpha1"
+                    kind: "Usage"
+                    metadata.name: "usage-xeks-by-awslbcontroller"
+                    spec = {
+                        replayDeletion: True
+                        by = {
+                            apiVersion: "helm.crossplane.io/v1beta1"
+                            kind: "Release"
+                            resourceSelector = {
+                                matchControllerRef: True
+                            }
+                        }
+                        of = {
+                            apiVersion: "aws.platform.upbound.io/v1alpha1"
+                            kind: "XEKS"
+                            resourceSelector = {
+                                matchLabels = {
+                                    "platform.upbound.io/deletion-ordering": "enabled"
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+            compositionPath: "../../apis/XAWSLBController/composition.yaml"
+            xrPath: "../../examples/awslbcontroller/example.yaml"
+            xrdPath: "../../apis/XAWSLBController/definition.yaml"
+            observedResources: [
+                awsv1alpha1.XPodIdentity{
+                    metadata = {
+                        name = "podidentity"
+                        annotations = {
+                              "crossplane.io/composition-resource-name" = "podidentity"
+                        }
+                    }
+                    spec = {
+                        parameters = {
+                            region: "eu-central-1"
+                            serviceAccount = {
+                                name: "aws-load-balancer-controller"
+                                namespace: "kube-system"
+                            }
+                        }
+                    }
+                    status = {
+                        podIdentity = {
+                            clusterName = "configuration-aws-lb-controller-c8ck8" # Important for proper Release spec test
+                        }
+                    }
+                }
+            ]
+            timeoutSeconds: 60
+            validate: False
+        }
+    }
+]
+items = _items

@@ -1,0 +1,27 @@
+apiVersion: meta.dev.upbound.io/v1alpha1
+kind: Project
+metadata:
+  name: configuration-aws-lb-controller
+spec:
+  dependsOn:
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Configuration
+    package: xpkg.upbound.io/upbound/configuration-aws-eks-pod-identity
+    version: v0.8.1
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Provider
+    package: xpkg.upbound.io/upbound/provider-helm
+    version: v0
+  - apiVersion: pkg.crossplane.io/v1
+    kind: Function
+    package: xpkg.upbound.io/crossplane-contrib/function-auto-ready
+    version: '>=v0.0.0'
+  description: |
+    This repository provides a configuration to install aws-load-balancer-controller in an eks-cluster, leveraging IRSA for secure access to AWS without static credentials
+  license: Apache-2.0
+  maintainer: Upbound <support@upbound.io>
+  readme: |
+    This repository creates a reference-installation of aws-load-balancer-controller in an eks-cluster, giving the user the ability to provision ALB's from services and ingresses with rich features, basing on recommendations from AWS on operating an EKS cluster on AWS.
+    For more details and customization options, you can explore [the GitHub repository](https://github.com/upbound/configuration-aws-lb-controller).
+  repository: xpkg.upbound.io/upbound/configuration-aws-lb-controller
+  source: github.com/upbound/configuration-aws-lb-controller

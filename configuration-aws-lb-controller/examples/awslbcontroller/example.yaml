@@ -1,0 +1,14 @@
+apiVersion: aws.platform.upbound.io/v1alpha1
+kind: XAWSLBController
+metadata:
+  name: configuration-aws-lb-controller
+  labels:
+    platform.upbound.io/deletion-ordering: enabled
+spec:
+  parameters:
+    region: eu-central-1
+    helm:
+      providerConfigName: configuration-aws-lb-controller
+    clusterNameSelector:
+      matchLabels:
+        crossplane.io/composite: configuration-aws-lb-controller

@@ -1,0 +1,19 @@
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xawslbcontrollers.aws.platform.upbound.io
+  labels:
+    provider: helm
+spec:
+  writeConnectionSecretsToNamespace: upbound-system
+  compositeTypeRef:
+    apiVersion: aws.platform.upbound.io/v1alpha1
+    kind: XAWSLBController
+  mode: Pipeline
+  pipeline:
+  - functionRef:
+      name: upbound-configuration-aws-lb-controllerxawslbcontroller
+    step: awslbcontroller
+  - functionRef:
+      name: crossplane-contrib-function-auto-ready
+    step: crossplane-contrib-function-auto-ready
