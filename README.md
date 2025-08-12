@@ -161,7 +161,7 @@ Run full end-to-end tests with real AWS resources:
 
 ```bash
 # Set up credentials
-export UPTEST_CLOUD_CREDENTIALS=$(cat azure.json)
+export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)
 
 # Run E2E tests
 up test run tests/e2etest-xawslbcontroller --e2e
