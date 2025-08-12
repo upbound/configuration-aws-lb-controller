@@ -14,12 +14,12 @@ _items = [
             defaultConditions: ["Ready"]
             manifests: [
                 # XNetwork - prerequisite networking for EKS cluster
-                {
-                    apiVersion: "aws.platform.upbound.io/v1alpha1"
-                    kind: "XNetwork"
-                    metadata.name: "configuration-aws-lb-controller"
-                    spec = {
-                        parameters = {
+                platformawsv1alpha1.XNetwork{
+                    metadata: {
+                        name: "configuration-aws-lb-controller"
+                    }
+                    spec: {
+                        parameters: {
                             id: "configuration-aws-lb-controller"
                             region: "eu-central-1"
                             subnets: [
@@ -48,26 +48,24 @@ _items = [
                     }
                 },
                 # XEKS - EKS cluster that will create Helm ProviderConfig automatically
-                {
-                    apiVersion: "aws.platform.upbound.io/v1alpha1"
-                    kind: "XEKS"
-                    metadata = {
+                platformawsv1alpha1.XEKS{
+                    metadata: {
                         name: "configuration-aws-lb-controller"
-                        labels = {
+                        labels: {
                             "platform.upbound.io/deletion-ordering": "enabled"
                         }
                     }
-                    spec = {
-                        parameters = {
+                    spec: {
+                        parameters: {
                             id: "configuration-aws-lb-controller"
                             region: "eu-central-1"
                             version: "1.33"
-                            nodes = {
+                            nodes: {
                                 count: 2
                                 instanceType: "t3.small"
                             }
                         }
-                        writeConnectionSecretToRef = {
+                        writeConnectionSecretToRef: {
                             name: "configuration-aws-lb-controller"
                             namespace: "upbound-system"
                         }
@@ -75,23 +73,21 @@ _items = [
                 },
                 # XAWSLBController - the main resource being tested
                 # XEKS will create Helm ProviderConfig "configuration-aws-lb-controller"
-                {
-                    apiVersion: "aws.platform.upbound.io/v1alpha1"
-                    kind: "XAWSLBController"
-                    metadata = {
+                platformawsv1alpha1.XAWSLBController{
+                    metadata: {
                         name: "configuration-aws-lb-controller"
-                        labels = {
+                        labels: {
                             "platform.upbound.io/deletion-ordering": "enabled"
                         }
                     }
-                    spec = {
-                        parameters = {
+                    spec: {
+                        parameters: {
                             region: "eu-central-1"
-                            helm = {
+                            helm: {
                                 providerConfigName: "configuration-aws-lb-controller"
                             }
-                            clusterNameSelector = {
-                                matchLabels = {
+                            clusterNameSelector: {
+                                matchLabels: {
                                     "crossplane.io/composite": "configuration-aws-lb-controller"
                                 }
                             }
