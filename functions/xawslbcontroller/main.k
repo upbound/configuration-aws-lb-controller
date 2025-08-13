@@ -30,6 +30,10 @@ _helmChartVersion = oxr.spec?.parameters?.helm?.chart?.version or "1.8.3"
 # Get cluster name from observed XPodIdentity (only available after it's created)
 _observedClusterName = _ocds?.podidentity?.Resource?.status?.podIdentity?.clusterName
 
+# Check if XPodIdentity is ready by checking if Ready condition exists with True status
+_readyCondition = [condition for condition in (_ocds?.podidentity?.Resource?.status?.conditions or []) if condition.type == "Ready" and condition.status == "True"]
+_isPodIdentityReady = len(_readyCondition) > 0
+
 # Convert imported KCL policy data back to JSON string
 _awsLbControllerPolicy = json.encode(iam_policy.aws_lb_controller_policy)
 
@@ -79,8 +83,8 @@ _items = [
                     serviceAccount: {
                         name: "aws-load-balancer-controller"
                     }
-                    # Start with 0 replicas, will be patched to 2 when IAM role is ready
-                    replicaCount: 0
+                    # Set replicaCount to 2 when XPodIdentity is ready, otherwise 0
+                    replicaCount: 2 if _isPodIdentityReady else 0
                     # Only set clusterName if available from observed XPodIdentity
                     if _observedClusterName:
                         clusterName = _observedClusterName
