@@ -40,6 +40,7 @@ _items = [
                                     name: "aws-load-balancer-controller"
                                 }
                                 replicaCount: 2
+                                vpcId: "vpc-12345678"
                             }
                         }
                         rollbackLimit: 3

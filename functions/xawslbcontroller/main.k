@@ -26,6 +26,7 @@ _deletionPolicy = oxr.spec?.parameters?.deletionPolicy or "Delete"
 _providerConfigName = oxr.spec?.parameters?.providerConfigName or None
 _helmProviderConfigName = oxr.spec?.parameters?.helm?.providerConfigName or None
 _helmChartVersion = oxr.spec?.parameters?.helm?.chart?.version or "1.8.3"
+_vpcId = oxr.spec?.parameters?.vpcId or None
 
 # Get cluster name from observed XPodIdentity (only available after it's created)
 _observedClusterName = _ocds?.podidentity?.Resource?.status?.podIdentity?.clusterName
@@ -88,6 +89,9 @@ _items = [
                     # Only set clusterName if available from observed XPodIdentity
                     if _observedClusterName:
                         clusterName = _observedClusterName
+                    # Set VPC ID if provided to avoid EC2 metadata discovery
+                    if _vpcId:
+                        vpcId = _vpcId
                 }
             }
             rollbackLimit: 3

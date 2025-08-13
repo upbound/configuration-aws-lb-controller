@@ -7,6 +7,7 @@ metadata:
 spec:
   parameters:
     region: eu-central-1
+    vpcId: vpc-12345678
     helm:
       providerConfigName: configuration-aws-lb-controller
     clusterNameSelector:
