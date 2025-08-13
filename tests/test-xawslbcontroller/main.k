@@ -39,7 +39,8 @@ _items = [
                                 serviceAccount = {
                                     name: "aws-load-balancer-controller"
                                 }
-                                replicaCount: 0
+                                replicaCount: 2
+                                vpcId: "vpc-12345678"
                             }
                         }
                         rollbackLimit: 3
@@ -92,6 +93,14 @@ _items = [
                         }
                     }
                     status = {
+                        conditions = [
+                            {
+                                type = "Ready"
+                                status = "True"
+                                reason = "Available"
+                                lastTransitionTime = "2025-08-13T17:25:33Z"
+                            }
+                        ]
                         podIdentity = {
                             clusterName = "configuration-aws-lb-controller-c8ck8" # Important for proper Release spec test
                         }

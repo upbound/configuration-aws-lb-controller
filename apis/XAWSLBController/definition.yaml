@@ -29,6 +29,9 @@ spec:
                     region:
                       type: string
                       description: Region is the region your cluster is running in.
+                    vpcId:
+                      type: string
+                      description: The VPC ID for the Kubernetes cluster. Set this manually when your pods are unable to use the metadata service to determine this automatically
                     clusterName:
                       description: The name of the cluster to create the association
                         in.
