@@ -81,6 +81,7 @@ _items = [
                 awsv1alpha1.PodIdentity{
                     metadata = {
                         name = "podidentity"
+                        namespace = "default"
                         annotations = {
                               "crossplane.io/composition-resource-name" = "podidentity"
                         }
