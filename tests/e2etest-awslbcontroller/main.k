@@ -11,7 +11,7 @@ _items = [
         metadata.name: "e2etest-awslbcontroller"
         spec = {
             crossplane.autoUpgrade.channel: "None"
-            crossplane.version = "2.0.2-up.5"
+            crossplane.version = "2.1.4-up.2"
             defaultConditions: ["Ready"]
             manifests: [
                 # AWSLBController - the main resource being tested
